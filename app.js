@@ -2,10 +2,9 @@
 require('dotenv').config()
 
 const express = require('express')
-mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
 const workoutRoutes = require('./routes/workouts')
-const { default: mongoose } = require('mongoose')
 
 // Express App
 const app = express()
@@ -18,12 +17,17 @@ app.use((req, res, next) => {
   next()
 })
 
-// Listen for client requests
-app.listen(process.env.PORT, () => {
-  console.log('Listening on port', process.env.PORT)
-})
-
 //react to the request object
 app.use('/api/workouts', workoutRoutes)
 
-mongoose
+// Connecting to Mongodb Atlas database
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => {
+    // Listen for client requests
+    app.listen(process.env.PORT, () => {
+      console.log(' Connected to Atlas database and listening on port', process.env.PORT)
+    })
+  })
+  .catch((error) => {
+    console.log(error)
+  })
