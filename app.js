@@ -23,11 +23,11 @@ app.use('/api/workouts', workoutRoutes)
 // Connecting to Mongodb Atlas database
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
-    // Listen for client requests
+    // To listen for client requests
     app.listen(process.env.PORT, () => {
       console.log(' Connected to Atlas database and listening on port', process.env.PORT)
     })
   })
-  .catch((error) => {
-    console.log(error)
+  .catch((err) => {
+    console.log(err)
   })
