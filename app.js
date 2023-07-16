@@ -12,10 +12,10 @@ const app = express()
 // middleware
 app.use(express.json())
 
-app.use((req, res, next) => {
-  console.log(req.path, req.method)
-  next()
-})
+// app.use((req, res, next) => {
+//   console.log(req.path, req.method)
+//   next()
+// })
 
 //react to the request object
 app.use('/api/workouts', workoutRoutes)

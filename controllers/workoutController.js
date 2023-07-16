@@ -2,7 +2,21 @@ const { response } = require('express')
 const workoutModel = require('../models/workoutModel')
 const { default: mongoose } = require('mongoose')
 
-// Get all workouts
+
+// Create a workout <------------------------------------------------------>
+const createWorkout = async (request, response) => {
+  const { title, reps, load } = request.body
+
+  try {
+    const workout = await workoutModel.create({ title, reps, load })
+    response.status(200).json(workout)
+  } catch (error) {
+    response.status(400).json({error: error.message })
+  }
+}
+
+
+// Get all workouts <------------------------------------------------------>
 const getAllWorkouts = async (request, response) => {
   const workout = await workoutModel.find({})
 
@@ -10,8 +24,7 @@ const getAllWorkouts = async (request, response) => {
 }
 
 
-
-// Get single workout
+// Get single workout <------------------------------------------------------>
 const getSingleWorkout = async (request, response) => {
   const id = request.params.id
 
@@ -28,43 +41,48 @@ const getSingleWorkout = async (request, response) => {
   }
 }  
 
+// Update a workout <------------------------------------------------------>
+const updateWorkout = async (request, response) => {
 
-
-// add a workout
-const createWorkout = async (request, response) => {
-  const { title, reps, load } = request.body
-
-  try {
-    const workout = await workoutModel.create({ title, reps, load })
-    response.status(200).json(workout)
-  } catch (error) {
-    response.status(400).json({error: error.message })
-  }
-}
-
-
-
-// delete a single workout
-
-const deleteSingleWorkout = (request, response) => {
   const id = request.params.id
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return response.status(404).json({error: "Invalid ID, Workout Not Found"})
   }
 
-  const workout = workoutModel.findByIdAndDelete({_id : id})
+  const workout = await workoutModel.findByIdAndUpdate({ _id: id }, { ...request.body })
+  
+  if (workout) {
+    response.status(200).json(await workoutModel.findById({ _id: id }))
+  } else {
+    response.status(404).json({error: "Workout Not Found"})
+  }
 }
 
 
-// update a workout
+// Delete a single workout <------------------------------------------------------>
+const deleteSingleWorkout = async (request, response) => {
+  const id = request.params.id
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return response.status(404).json({error: "Invalid ID, Workout Not Found"})
+  }
+
+  const workout = await workoutModel.findByIdAndDelete({ _id: id })
+  
+  if (workout) {
+    response.status(200).json(await workoutModel.find({}))
+  } else {
+    response.status(404).json({error: "Workout Not Found"})
+  }
+}
 
 
-
-
-
+// exporting the workout controllers <------------------------------------------------------>
 module.exports = {
   createWorkout,
   getAllWorkouts,
-  getSingleWorkout
+  getSingleWorkout,
+  deleteSingleWorkout,
+  updateWorkout
 }
