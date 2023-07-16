@@ -1,8 +1,8 @@
 const { response } = require('express')
 const workoutModel = require('../models/workoutModel')
+const { default: mongoose } = require('mongoose')
 
 // Get all workouts
-
 const getAllWorkouts = async (request, response) => {
   const workout = await workoutModel.find({})
 
@@ -10,17 +10,25 @@ const getAllWorkouts = async (request, response) => {
 }
 
 
+
 // Get single workout
 const getSingleWorkout = async (request, response) => {
   const id = request.params.id
 
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return response.status(404).json({error: "Invalid ID, Workout Not Found"})
+  }
+
   const workout = await workoutModel.findById(id)
+
   if (workout) {
     response.status(200).json(workout)
   } else {
     response.status(404).json({error: "Workout Not Found"})
   }
 }  
+
+
 
 // add a workout
 const createWorkout = async (request, response) => {
@@ -35,7 +43,18 @@ const createWorkout = async (request, response) => {
 }
 
 
+
 // delete a single workout
+
+const deleteSingleWorkout = (request, response) => {
+  const id = request.params.id
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return response.status(404).json({error: "Invalid ID, Workout Not Found"})
+  }
+
+  const workout = workoutModel.findByIdAndDelete({_id : id})
+}
 
 
 // update a workout
