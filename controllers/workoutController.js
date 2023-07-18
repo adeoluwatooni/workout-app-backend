@@ -18,7 +18,7 @@ const createWorkout = async (request, response) => {
 
 // Get all workouts <------------------------------------------------------>
 const getAllWorkouts = async (request, response) => {
-  const workout = await workoutModel.find({})
+  const workout = await workoutModel.find({}).sort({createdAt: -1})
 
   response.status(200).json(workout)
 }
